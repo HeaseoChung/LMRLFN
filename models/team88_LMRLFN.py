@@ -7,21 +7,6 @@ act = nn.LeakyReLU(lrelu_value)
 
 
 def activation(act_type, inplace=True, neg_slope=0.05, n_prelu=1):
-    """
-    Activation functions for ['relu', 'lrelu', 'prelu'].
-
-    Parameters
-    ----------
-    act_type: str
-        one of ['relu', 'lrelu', 'prelu'].
-    inplace: bool
-        whether to use inplace operator.
-    neg_slope: float
-        slope of negative region for `lrelu` or `prelu`.
-    n_prelu: int
-        `num_parameters` for `prelu`.
-    ----------
-    """
     act_type = act_type.lower()
     if act_type == "relu":
         layer = nn.ReLU(inplace)
@@ -43,9 +28,6 @@ def _make_pair(value):
 
 
 def conv_layer(in_channels, out_channels, kernel_size, bias=True):
-    """
-    Re-write convolution layer for adaptive `padding`.
-    """
     kernel_size = _make_pair(kernel_size)
     padding = (int((kernel_size[0] - 1) / 2), int((kernel_size[1] - 1) / 2))
     return nn.Conv2d(
@@ -65,16 +47,6 @@ class RepConv(nn.Module):
 
 
 class BasicBlock(nn.Module):
-    """Basic block for building HFAN
-
-    Args:
-        n_feats (int): The number of feature maps.
-
-    Diagram:
-        --RepConv--LeakyReLU--RepConv--
-
-    """
-
     def __init__(self, n_feats):
         super(BasicBlock, self).__init__()
         self.conv1 = RepConv(n_feats)
@@ -89,18 +61,6 @@ class BasicBlock(nn.Module):
 
 
 class HFAB(nn.Module):
-    """High-Frequency Attention Block
-
-    args:
-        n_feats (int): The number of input feature maps.
-        up_blocks (int): The number of RepConv in this HFAB.
-        mid_feats (int): Input feature map numbers of RepConv.
-
-    Diagram:
-        --Reduce_dimension--[RepConv]*up_blocks--Expand_dimension--Sigmoid--
-
-    """
-
     def __init__(self, n_feats, up_blocks, mid_feats):
         super(HFAB, self).__init__()
         self.squeeze = nn.Conv2d(n_feats, mid_feats, 3, 1, 1)
@@ -120,9 +80,9 @@ class HFAB(nn.Module):
         return out
 
 
-class RLFB(nn.Module):
+class LMRLFB(nn.Module):
     def __init__(self, in_channels, mid_channels, hfab_channels, up_blocks):
-        super(RLFB, self).__init__()
+        super(LMRLFB, self).__init__()
         self.c1_r = conv_layer(in_channels, mid_channels, 3)
         self.c2_r = conv_layer(mid_channels, mid_channels, 3)
         self.c3_r = conv_layer(mid_channels, in_channels, 3)
@@ -174,10 +134,10 @@ class LMRLFN(nn.Module):
             HFAB(n_feats, up_blocks[0], hfab_feats - 4),
         )
 
-        self.block_1 = RLFB(n_feats, m_feats, hfab_feats, 2)
-        self.block_2 = RLFB(n_feats, m_feats, hfab_feats, 1)
-        self.block_3 = RLFB(n_feats, m_feats, hfab_feats, 1)
-        self.block_4 = RLFB(n_feats, m_feats, hfab_feats, 1)
+        self.block_1 = LMRLFB(n_feats, m_feats, hfab_feats, 2)
+        self.block_2 = LMRLFB(n_feats, m_feats, hfab_feats, 1)
+        self.block_3 = LMRLFB(n_feats, m_feats, hfab_feats, 1)
+        self.block_4 = LMRLFB(n_feats, m_feats, hfab_feats, 1)
 
         self.lr_conv = nn.Conv2d(n_feats, n_feats, 3, 1, 1)
 
