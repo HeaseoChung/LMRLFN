@@ -23,11 +23,11 @@ def select_model(args, device):
         model_path = os.path.join("model_zoo", "team00_rfdn.pth")
         model = RFDN()
         model.load_state_dict(torch.load(model_path), strict=True)
-    elif model_id == 88:
-        from models.team88_LMRLFN import LMRLFN
+    elif model_id == 33:
+        from models.team33_LMRLFN import LMRLFN
 
-        name, data_range = f"{model_id:02}_RFDN_baseline", 1.0
-        model_path = os.path.join("model_zoo", "team88_LMRLFN.pt")
+        name, data_range = f"{model_id:02}_LMRLFN", 1.0
+        model_path = os.path.join("model_zoo", "team33_LMRLFN.pt")
         model = LMRLFN()
         model.load_state_dict(torch.load(model_path), strict=True)
     else:
@@ -54,8 +54,8 @@ def select_dataset(data_dir, mode):
     elif mode == "valid":
         path = [
             (
-                os.path.join(data_dir, f"LR/valid/X4/DIV2K/{i:04}x4.png"),
-                os.path.join(data_dir, f"HR/valid/DIV2K/{i:04}.png"),
+                os.path.join(data_dir, f"DIV2K_valid_LR/{i:04}x4.png"),
+                os.path.join(data_dir, f"DIV2K_valid_HR/{i:04}.png"),
             )
             for i in range(801, 901)
         ]
@@ -393,9 +393,15 @@ def main(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser("NTIRE2023-EfficientSR")
-    parser.add_argument("--data_dir", default="/dataset/NTIRE2023/", type=str)
     parser.add_argument(
-        "--save_dir", default="/workspace/NTIRE2022_ESR/results", type=str
+        "--data_dir",
+        default="/cluster/work/cvl/yawli/data/NTIRE2023_Challenge",
+        type=str,
+    )
+    parser.add_argument(
+        "--save_dir",
+        default="/cluster/work/cvl/yawli/data/NTIRE2023_Challenge/results",
+        type=str,
     )
     parser.add_argument("--model_id", default=0, type=int)
     parser.add_argument(
