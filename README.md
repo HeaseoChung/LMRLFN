@@ -2,7 +2,12 @@
 
 
 ## Low Memory Residual Local Feature Distillation Network (LMRLFN)
+
+### LMRLFN
+
 ![Network](examples/LMRLFN.png)
+
+### LMRLFB
 ![Blcoks](examples/LMRLFB.png)
 
 ## How to test LMRLFN model?
