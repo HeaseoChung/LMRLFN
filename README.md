@@ -17,8 +17,9 @@ python test_demo.py --model_id 33
 
 ## Results
 ![NTIRE CHALLENGE 2023 for Efficient Super Resolution](examples/ranking.png)
+- Placed third in the task of memory consumption
 - Placed seventh when considering the overall performance
-- The runner-up in the task of memory consumption
+
 
 ## License and Acknowledgement
 This code repository is release under [MIT License](LICENSE). 
